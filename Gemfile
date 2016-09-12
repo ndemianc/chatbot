@@ -6,4 +6,7 @@ gem 'sqlite3'
 gem 'activerecord'
 gem 'activesupport'
 gem 'workflow'
+gem 'rspec', '3.5.0'
+gem 'simplecov'
+gem 'interactor'
 gem 'rubycritic', :require => false
