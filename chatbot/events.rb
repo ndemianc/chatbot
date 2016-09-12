@@ -7,7 +7,7 @@ module Chatbot
     end
 
     def save_user
-      question 'Please enter your name'
+      question = 'Please enter your name'
     end
 
     def email
@@ -16,7 +16,6 @@ module Chatbot
 
     def phone
       question = 'Please type your phone number'
-      answer = gets
     end
 
     def reject
