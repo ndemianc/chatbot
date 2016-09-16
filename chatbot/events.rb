@@ -2,44 +2,70 @@ module Chatbot
   module Events
     extend ActiveSupport::Concern
 
-    def start
+    def say_hello
       puts 'I can help you with answers on all your related questions and help to find a great job! Let\'s talk'
     end
 
-    def save_user
-      question = 'Please enter your name'
+    def get_name
+      @current_question = 'Please enter your name'
+      ask()
     end
 
-    def email
-      question = 'Please type your email address'
+    def get_contact_option
+      question = "Hello #{@current_user[:name]},\nHow can we reach out to you?"
+      format_options = options.reduce('') { |result, opt| result + "\n#{opt.try(:[], :index)}) #{opt.try(:[], :name)}" }
+      @current_question = "#{question}\nBy: #{format_options}"
+      ask()
     end
 
-    def phone
-      question = 'Please type your phone number'
+    def get_contact_by_option
+      @current_question = "Please type your #{option[:subject]}"
+      ask()
     end
 
-    def reject
-      puts 'In reject'
+    def get_time
+      @current_question = "What is the best time we can reach out to you?"
+      ask()
     end
 
-    def input
-      puts 'In input'
+
+    def verify_input
+      question = [
+        "We are going to contact you using #{option[:subject]} #{current_user[option[:event]]}",
+        "1) Yes, please",
+        "2) Sorry, wrong #{option[:name]}"
+      ].join("\n")
+      @current_question = question
+      ask()
     end
 
-    def confirmed
-      puts 'In confirmed'
+    def save_conversation
+      @conversation.push [current_question, current_answer].join("\n")
     end
 
-    def wrong_email
-      puts 'In wrong_email'
+    def create_user
+      @current_user[:name] = current_answer
     end
 
-    def wrong_phone
-      puts 'In wrong_phone'
+    def update_user
+      @current_user[option[:event]] = current_answer
     end
 
-    def contact_failed
-      puts 'In contact_failed'
+    def update_time
+      @current_user[:time] = current_answer
     end
+
+    def save_selected_option
+      ca = current_answer.to_i
+      last_position = options.length
+      @selected_option = ca.between?(1, last_position) ? ca : last_position
+    end
+
+    def get_time_option
+      time_options = ['1) ASAP', '2) Morning', '3) Afternoon', '4) Evening']
+      @current_question = "What is the best time we can reach out to you?\n#{time_options.join("\n")}"
+      ask()
+    end
+
   end
 end
