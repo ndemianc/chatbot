@@ -3,6 +3,8 @@ module Chatbot
     include Workflow
     include Chatbot::Events
 
+    attr_reader :service, :current_user_id, :current_question, :selected_option
+
     OPTIONS = [
       { event: :phone, name: 'Phone', subject: 'phone number', index: 1 },
       { event: :email, name: 'Email', subject: 'email address', index: 2 },
@@ -11,13 +13,10 @@ module Chatbot
 
     def initialize(service = nil)
       @service = service
-      @current_user = {}
+      @current_user_id = nil
       @current_question
       @current_answer
       @selected_option
-      @contacts = []
-      @best_time
-      @conversation = []
     end
 
     workflow do
@@ -48,7 +47,7 @@ module Chatbot
         event :process_email, :transitions_to => :confirm_input
         on_entry do
           get_contact_by_option
-          update_user
+          update_contact_by_option
           process_email!
         end
       end
@@ -56,7 +55,7 @@ module Chatbot
         event :process_phone, :transitions_to => :time
         on_entry do
           get_contact_by_option
-          update_user
+          update_contact_by_option
           process_phone!
         end
       end
@@ -99,10 +98,6 @@ module Chatbot
       proc { |model| model.option[:event] == prop.to_sym }
     end
 
-    private
-
-    attr_reader :service, :current_user, :current_question, :contact_type, :contacts, :best_time, :selected_option
-
     def ask
       puts current_question
       @current_answer = gets.chomp!
@@ -110,6 +105,14 @@ module Chatbot
 
     def options
       OPTIONS
+    end
+
+    def current_user
+      service.current_user current_user_id
+    end
+
+    def save_conversation
+      service.save_conversation(current_user_id, current_question, current_answer) if current_user_id
     end
   end
 end

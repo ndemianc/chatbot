@@ -12,7 +12,7 @@ module Chatbot
     end
 
     def get_contact_option
-      question = "Hello #{@current_user[:name]},\nHow can we reach out to you?"
+      question = "Hello #{current_user[:name]},\nHow can we reach out to you?"
       format_options = options.reduce('') { |result, opt| result + "\n#{opt.try(:[], :index)}) #{opt.try(:[], :name)}" }
       @current_question = "#{question}\nBy: #{format_options}"
       ask()
@@ -28,7 +28,6 @@ module Chatbot
       ask()
     end
 
-
     def verify_input
       question = [
         "We are going to contact you using #{option[:subject]} #{current_user[option[:event]]}",
@@ -39,20 +38,17 @@ module Chatbot
       ask()
     end
 
-    def save_conversation
-      @conversation.push [current_question, current_answer].join("\n")
-    end
-
     def create_user
-      @current_user[:name] = current_answer
+      @current_user_id = service.create_user(current_answer)
     end
 
-    def update_user
-      @current_user[option[:event]] = current_answer
+    def update_contact_by_option
+      key = option[:event]
+      service.update_user(@current_user_id, key, current_answer)
     end
 
     def update_time
-      @current_user[:time] = current_answer
+      service.update_user(@current_user_id, :time, current_answer)
     end
 
     def save_selected_option
@@ -66,6 +62,5 @@ module Chatbot
       @current_question = "What is the best time we can reach out to you?\n#{time_options.join("\n")}"
       ask()
     end
-
   end
 end
