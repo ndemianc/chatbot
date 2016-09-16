@@ -9,4 +9,5 @@ gem 'workflow'
 gem 'rspec', '3.5.0'
 gem 'simplecov'
 gem 'interactor'
+gem 'byebug'
 gem 'rubycritic', :require => false
