@@ -32,3 +32,8 @@ Run Rspec unit tests using command:
 ```ruby
 bundle exec rspec
 ```
+
+To try it out, simply run command:
+```ruby
+ruby ./test_chatbot.rb
+```
