@@ -1,20 +1,24 @@
 module Chatbot
+
+  class UserCreationError < StandardError
+  end
+
   class Service
     def save_conversation(user_id, question, answer)
-      user_profile(user_id).messages.create(question: question, answer: answer)
+      user_profile(user_id).save_message({ question: question, answer: answer })
     end
 
     def create_user(name)
-      user = User.create(name: name)
-      if user.save
+      user = user_model.create(name: name)
+      if user
         return user.id
       else
-        throw 'User creation failed'
+        raise UserCreationError, 'User creation failed'
       end
     end
 
     def current_user(id)
-      User.find(id)
+      user_model.find(id)
     end
 
     def update_user(id, field, value)
@@ -23,8 +27,12 @@ module Chatbot
 
     private
 
+    def user_model
+      User
+    end
+
     def user_profile(user_id)
-      User.find(user_id)
+      @user ||= user_model.find(user_id)
     end
   end
 end
