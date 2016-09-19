@@ -1,4 +1,4 @@
-ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
+ActiveRecord::Base.logger = Logger.new(File.open('database_test.log', 'w'))
 
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
@@ -6,7 +6,7 @@ ActiveRecord::Base.establish_connection(
 )
 
 ActiveRecord::Schema.define do
-  unless ActiveRecord::Base.connection.tables.include? 'users'
+  unless ActiveRecord::Base.connection.data_sources.include? 'users'
     create_table :users do |table|
       table.column :name, :string
       table.column :age,  :integer
@@ -16,7 +16,7 @@ ActiveRecord::Schema.define do
     end
   end
 
-  unless ActiveRecord::Base.connection.tables.include? 'messages'
+  unless ActiveRecord::Base.connection.data_sources.include? 'messages'
     create_table :messages do |table|
       table.column  :user_id,  :integer
       table.column  :question, :string
@@ -27,6 +27,11 @@ end
 
 class User < ActiveRecord::Base
   has_many :messages
+
+  def save_message(params)
+    self.messages.create(params)
+  end
+
 end
 
 class Message < ActiveRecord::Base

@@ -100,7 +100,7 @@ module Chatbot
 
     def ask
       puts current_question
-      @current_answer = gets.chomp!
+      @current_answer = gets.chomp
     end
 
     def options
